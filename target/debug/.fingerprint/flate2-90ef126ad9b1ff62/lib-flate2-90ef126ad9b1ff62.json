@@ -1,1 +1,0 @@
-{"rustc":11059302966043277925,"features":"[\"default\", \"miniz-sys\"]","target":16147787259542837878,"profile":731176819336294830,"deps":[["libc v0.2.19",8173731594220028832],["miniz-sys v0.1.9",15574481575654494531]],"local":{"Precalculated":"0.2.19"},"rustflags":[]}
