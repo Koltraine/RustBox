@@ -7,20 +7,28 @@
 // `error_chain!` can recurse deeply
 #![recursion_limit = "1024"]
 
+// General use
 #[macro_use]
 extern crate error_chain;
-extern crate ncollide;
-extern crate nalgebra;
-extern crate nphysics2d;
-extern crate piston_window;
-extern crate sprite;
 extern crate find_folder;
-extern crate gfx_device_gl; //TODO: Do we need this?
 extern crate rand;
 extern crate itertools;
 
+// Physics
+extern crate ncollide;
+extern crate nalgebra;
+extern crate nphysics2d;
+
+// Display engine
+extern crate piston_window;
+extern crate sprite;
+extern crate texture;
+extern crate gfx_device_gl; //TODO: Do we need this?
+extern crate gfx_core;
+
 mod objects;
 mod map;
+mod player;
 
 use piston_window::*;
 use nphysics2d::world::World;
@@ -31,6 +39,7 @@ use ncollide::shape;
 
 use objects::{Ball, Renderable, GameObject};
 use std::fs::File;
+use std::rc::Rc;
 
 
 struct Game {
@@ -123,14 +132,27 @@ fn main() {
     let mut glyphs = Glyphs::new(font, factory).unwrap();
 
 
-    let map = map::TiledMap::new(9213);
-    game.objects.push(Box::new(map));
+    //let map = map::TiledMap::new(9213);
+    //game.objects.push(Box::new(map));
+
+    let tex_dir = find_folder::Search::ParentsThenKids(3, 3)
+        .for_folder("textures").unwrap();
+    println!("{:?}", tex_dir);
+
+    let texture = Rc::new(Texture::from_path(
+        &mut window.factory,
+        tex_dir.join("zombie").join("zombie_0.png"),
+        Flip::None,
+        &TextureSettings::new()
+    ).unwrap());
+    let player = player::Player::new(texture.clone());
 
     while let Some(e) = window.next() {
         match e {
             Input::Render(r) => {
                 window.draw_2d(&e, |c, g| {
                     game.render(c, g);
+                    player.render(c, g);
                 });
             }
             Input::Update(u) => {

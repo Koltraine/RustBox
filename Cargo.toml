@@ -5,16 +5,21 @@ name = "RustBox"
 version = "0.1.0"
 
 [dependencies]
+# General Use
+error-chain = "0.10"
 itertools = "^0.6"
 rand = "^0.3"
 find_folder = "^0.3"
 
+# Physics
 nalgebra = "^0.11"
 ncollide = "^0.11"
 nphysics2d = "^0.6"
 
+# Display
 piston2d-sprite = "0.36"
+piston-texture = "0.5"
 piston_window = "0.65"
 gfx_device_gl = "0.14"
+gfx_core = "*"
 
-error-chain = "0.10"
