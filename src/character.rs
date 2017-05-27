@@ -12,26 +12,35 @@ use std::rc::Rc;
 use objects::{Renderable, Updatable};
 use piston_window::{Context, G2d, UpdateArgs};
 use image::ImageBuffer;
-use character::Character;
 
-pub struct Player {
-    character: Character,
+
+pub struct Character {
+    scene: Scene<Texture<Resources>>,
 }
 
-impl Player {
-    pub fn new(character: Character) -> Player {
-        Player {
-            character
-        }
+impl Character {
+    pub fn new() -> Character {
+        let mut p = Character {
+            scene: Scene::new(),
+        };
+        let texture = Rc::new(Texture::from_path(
+                &mut window.factory,
+                tex_dir.join("zombie").join("zombie_0.png"),
+                Flip::None,
+                &TextureSettings::new()
+        ).unwrap());
+
+        p.scene.add_child(Sprite::from_texture(texture));
+        p
     }
 }
 
-impl Renderable for Player {
+impl Renderable for Character {
     fn render(&self, c: Context, g: &mut G2d) {
         self.scene.draw(c.transform, g);
     }
 }
 
-impl Updatable for Player {
+impl Updatable for Character {
     fn update(&mut self, upd: UpdateArgs) { }
 }

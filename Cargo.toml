@@ -17,9 +17,10 @@ ncollide = "^0.11"
 nphysics2d = "^0.6"
 
 # Display
-piston2d-sprite = "0.36"
-piston-texture = "0.5"
-piston_window = "0.65"
-gfx_device_gl = "0.14"
-gfx_core = "*"
-
+piston = "^0.32"
+piston_window = "^0.65"
+piston-texture = "^0.5"
+piston2d-sprite = "^0.36"
+gfx_device_gl = "^0.14"
+gfx_core = "^0.7"
+image = "0.13.0"

@@ -25,10 +25,12 @@ extern crate sprite;
 extern crate texture;
 extern crate gfx_device_gl; //TODO: Do we need this?
 extern crate gfx_core;
+extern crate image;
 
 mod objects;
 mod map;
 mod player;
+mod character;
 
 use piston_window::*;
 use nphysics2d::world::World;
@@ -139,13 +141,7 @@ fn main() {
         .for_folder("textures").unwrap();
     println!("{:?}", tex_dir);
 
-    let texture = Rc::new(Texture::from_path(
-        &mut window.factory,
-        tex_dir.join("zombie").join("zombie_0.png"),
-        Flip::None,
-        &TextureSettings::new()
-    ).unwrap());
-    let player = player::Player::new(texture.clone());
+    let player = player::Player::new(Character::new());
 
     while let Some(e) = window.next() {
         match e {
