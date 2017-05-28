@@ -13,9 +13,14 @@ use piston_window::{G2dTexture, Context, G2d, UpdateArgs};
 use std::path::PathBuf;
 use gfx::Factory;
 use gfx_device_gl::Resources;
-use image::{Rgba, Pixel, ImageBuffer};
+use image::{Rgba, Pixel, ImageBuffer, GenericImage};
 use image;
 
+error_chain! {
+    foreign_links {
+        TextureCreation(::gfx_core::factory::CombinedError);
+    }
+}
 
 /// Produces textures from a tilemap texture
 pub struct TileMap {
@@ -31,20 +36,24 @@ impl TileMap {
         }
     }
 
-    pub fn get_texture<F: Factory<Resources>, R: Into<[usize; 4]>>(&self, rect: R, factory: &mut F) -> Result<Rc<G2dTexture>, TileMapError> {
+    pub fn get_texture<F: Factory<Resources>, R: Into<[u32; 4]>>(&mut self, rect: R, factory: &mut F) -> Result<Rc<G2dTexture>> {
         let r = rect.into();
         let (x, y, w, h) = (r[0], r[1], r[2], r[3]);
 
-        let texture = Texture::from_image(
-                factory,
-                &self.image,
-                &TextureSettings::new()
-        ).unwrap();
+        let new_img = self.image
+            .sub_image(x,y,w,h)
+            .to_image();
 
-        
-        unimplemented!();
+        let tx_res = Texture::from_image(
+                factory,
+                &new_img,
+                &TextureSettings::new()
+        );
+
+        match tx_res {
+            Ok(tx) => Ok(Rc::new(tx)),
+            Err(err) => Err(ErrorKind::TextureCreation(err).into()),
+        } 
     }
 
 }
-
-pub enum TileMapError{}
