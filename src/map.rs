@@ -10,7 +10,6 @@ use piston_window::*;
 use nphysics2d::object::{RigidBodyHandle};
 use objects::{Renderable, Updatable, GameObject};
 use std::io::Read;
-use gfx_device_gl;
 use rand;
 use rand::distributions::Range;
 use rand::Rng;

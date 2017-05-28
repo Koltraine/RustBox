@@ -23,7 +23,8 @@ extern crate nphysics2d;
 extern crate piston_window;
 extern crate sprite;
 extern crate texture;
-extern crate gfx_device_gl; //TODO: Do we need this?
+extern crate gfx;
+extern crate gfx_device_gl; // do we need this?
 extern crate gfx_core;
 extern crate image;
 
@@ -38,6 +39,7 @@ use nalgebra::{TranslationBase, Vector2};
 use nphysics2d::object::{RigidBody, RigidBodyHandle};
 use ncollide::shape;
 //use nalgebra::geometry::Similarity;
+use character::Character;
 
 use objects::{Ball, Renderable, GameObject};
 use std::fs::File;
@@ -141,7 +143,8 @@ fn main() {
         .for_folder("textures").unwrap();
     println!("{:?}", tex_dir);
 
-    let player = player::Player::new(Character::new());
+    let t = tex_dir.join("zombie").join("zombie_0.png");
+    let player = player::Player::new(Character::new(t, &mut window.factory));
 
     while let Some(e) = window.next() {
         match e {

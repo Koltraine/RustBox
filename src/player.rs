@@ -7,12 +7,12 @@
 use sprite::{Scene, Sprite};
 use texture::ImageSize;
 use piston_window::Texture;
-use gfx_device_gl::Resources;
 use std::rc::Rc;
 use objects::{Renderable, Updatable};
 use piston_window::{Context, G2d, UpdateArgs};
 use image::ImageBuffer;
 use character::Character;
+use gfx::{Resources, Factory};
 
 pub struct Player {
     character: Character,
@@ -28,10 +28,12 @@ impl Player {
 
 impl Renderable for Player {
     fn render(&self, c: Context, g: &mut G2d) {
-        self.scene.draw(c.transform, g);
+        self.character.render(c, g);
     }
 }
 
 impl Updatable for Player {
-    fn update(&mut self, upd: UpdateArgs) { }
+    fn update(&mut self, upd: UpdateArgs) {
+        self.character.update(upd);
+     }
 }
