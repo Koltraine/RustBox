@@ -55,5 +55,4 @@ impl TileMap {
             Err(err) => Err(ErrorKind::TextureCreation(err).into()),
         } 
     }
-
 }

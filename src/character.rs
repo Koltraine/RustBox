@@ -20,16 +20,10 @@ pub struct Character {
 }
 
 impl Character {
-    pub fn new<F: Factory<Resources>>(tex_file: PathBuf, factory: &mut F) -> Character {
+    pub fn new(texture: Rc<G2dTexture>) -> Character {
         let mut p = Character {
             scene: Scene::new(),
         };
-        let texture = Rc::new(Texture::from_path(
-                factory,
-                tex_file,
-                Flip::None,
-                &TextureSettings::new()
-        ).unwrap());
 
         p.scene.add_child(Sprite::from_texture(texture));
         p

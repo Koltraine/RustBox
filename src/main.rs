@@ -41,6 +41,7 @@ use nphysics2d::object::{RigidBody, RigidBodyHandle};
 use ncollide::shape;
 //use nalgebra::geometry::Similarity;
 use character::Character;
+use tilemap::TileMap;
 
 use objects::{Ball, Renderable, GameObject};
 use std::fs::File;
@@ -145,7 +146,15 @@ fn main() {
     println!("{:?}", tex_dir);
 
     let t = tex_dir.join("zombie").join("zombie_0.png");
-    let player = player::Player::new(Character::new(t, &mut window.factory));
+    let mut tilemap = TileMap::new(t);
+    let player = player::Player::new(
+        Character::new(
+            tilemap.get_texture(
+                [0, 0, 256, 256],
+                &mut window.factory
+            ).unwrap()
+        )
+    );
 
     while let Some(e) = window.next() {
         match e {
