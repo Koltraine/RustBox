@@ -14,18 +14,23 @@ use image::ImageBuffer;
 use std::path::PathBuf;
 use gfx::Factory;
 use gfx_device_gl::Resources;
+use piston_window::{Input, clear, Transformed};
 
 pub struct Character {
     scene: Scene<G2dTexture>,
 }
 
 impl Character {
-    pub fn new(texture: Rc<G2dTexture>) -> Character {
+    pub fn new(animation: Vec<Rc<G2dTexture>>) -> Character {
         let mut p = Character {
             scene: Scene::new(),
         };
 
-        p.scene.add_child(Sprite::from_texture(texture));
+        for t in animation {
+            let mut sprite = Sprite::from_texture(t);
+            sprite.set_position(200.0, 200.0);
+            let id = p.scene.add_child(sprite);
+        }
         p
     }
 }
@@ -37,5 +42,7 @@ impl Renderable for Character {
 }
 
 impl Updatable for Character {
-    fn update(&mut self, upd: UpdateArgs) { }
+    fn update(&mut self, upd: UpdateArgs) {
+        self.scene.event(&Input::Update(upd));
+    }
 }

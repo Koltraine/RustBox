@@ -147,14 +147,17 @@ fn main() {
 
     let t = tex_dir.join("zombie").join("zombie_0.png");
     let mut tilemap = TileMap::new(t);
-    let player = player::Player::new(
-        Character::new(
-            tilemap.get_texture(
-                [0, 0, 256, 256],
-                &mut window.factory
-            ).unwrap()
-        )
-    );
+    let running = vec![
+        tilemap.get_texture([ 5 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.get_texture([ 6 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.get_texture([ 7 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.get_texture([ 8 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.get_texture([ 9 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.get_texture([10 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.get_texture([11 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.get_texture([12 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap()
+    ];
+    let player = player::Player::new(Character::new(running));
 
     while let Some(e) = window.next() {
         match e {
