@@ -32,6 +32,7 @@ mod objects;
 mod map;
 mod player;
 mod character;
+mod tilemap;
 
 use piston_window::*;
 use nphysics2d::world::World;
