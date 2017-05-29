@@ -146,16 +146,16 @@ fn main() {
     println!("{:?}", tex_dir);
 
     let t = tex_dir.join("zombie").join("zombie_0.png");
-    let mut tilemap = TileMap::new(t);
+    let mut tilemap = TileMap::new(t, [128, 128]);
     let running = vec![
-        tilemap.get_texture([ 5 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
-        tilemap.get_texture([ 6 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
-        tilemap.get_texture([ 7 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
-        tilemap.get_texture([ 8 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
-        tilemap.get_texture([ 9 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
-        tilemap.get_texture([10 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
-        tilemap.get_texture([11 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
-        tilemap.get_texture([12 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap()
+        tilemap.texture_coord([ 5 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.texture_coord([ 6 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.texture_coord([ 7 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.texture_coord([ 8 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.texture_coord([ 9 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.texture_coord([10 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.texture_coord([11 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
+        tilemap.texture_coord([12 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap()
     ];
     let player = player::Player::new(Character::new(running));
 
