@@ -146,7 +146,7 @@ fn main() {
     println!("{:?}", tex_dir);
 
     let t = tex_dir.join("zombie").join("zombie_0.png");
-    let mut tilemap = TileMap::new(t, [128, 128]);
+    let tilemap = TileMap::new(t, [128, 128]);
     let running = vec![
         tilemap.texture_coord([ 5 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
         tilemap.texture_coord([ 6 * 128, 4 * 128, 128, 128], &mut window.factory).unwrap(),
