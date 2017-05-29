@@ -42,6 +42,7 @@ impl Character {
 
     pub fn set_animation(&mut self, action: Action, anim: Animation) {
         let id = action as usize;
+        //TODO: Is insert right?
         self.animations.insert(id, anim);
     }
 }
