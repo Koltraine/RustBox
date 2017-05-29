@@ -32,7 +32,7 @@ mod objects;
 mod map;
 mod player;
 mod character;
-mod tilemap;
+mod image_ops;
 
 use piston_window::*;
 use nphysics2d::world::World;
@@ -41,9 +41,9 @@ use nphysics2d::object::{RigidBody, RigidBodyHandle};
 use ncollide::shape;
 //use nalgebra::geometry::Similarity;
 use character::Character;
-use tilemap::TileMap;
+use image_ops::TileMap;
 
-use objects::{Ball, Renderable, GameObject};
+use objects::{Ball, Renderable, Updatable, GameObject};
 use std::fs::File;
 use std::rc::Rc;
 
@@ -157,7 +157,7 @@ fn main() {
         tilemap.texture([10, 4], &mut window.factory).unwrap(),
         tilemap.texture([11, 4], &mut window.factory).unwrap()
     ];
-    let player = player::Player::new(Character::new(running));
+    let mut player = player::Player::new(Character::new(running));
 
     while let Some(e) = window.next() {
         match e {
@@ -169,6 +169,7 @@ fn main() {
             }
             Input::Update(u) => {
                 game.update(u);
+                player.update(u);
             }
             Input::Press(b) => {
                 game.keypress(b);
