@@ -17,29 +17,49 @@ use gfx_device_gl::Resources;
 use piston_window::{Input, clear, Transformed};
 use image_ops::Animation;
 
+#[derive(Copy, Clone, PartialEq, Debug)]
+pub enum Action {
+    Running,
+}
+
 pub struct Character {
-    running: Animation,
+    cur_action: Option<Action>,
+    animations: Vec<Animation>,
 }
 
 //TODO: Should we implement graphics::Transformed?
 impl Character {
-    pub fn new(frames: Vec<Rc<G2dTexture>>) -> Character {
-        let mut c = Character {
-            running: Animation::new(8.0, frames),
-        };
-        c.running.transform = c.running.transform.trans(200.0, 200.0);
-        c
+    pub fn new() -> Character {
+        Character {
+            animations: vec![],
+            cur_action: None,
+        }
+    }
+
+    pub fn set_action(&mut self, action: Option<Action>) {
+        self.cur_action = action;
+    }
+
+    pub fn set_animation(&mut self, action: Action, anim: Animation) {
+        let id = action as usize;
+        self.animations.insert(id, anim);
     }
 }
 
 impl Renderable for Character {
     fn render(&self, c: Context, g: &mut G2d) {
-        self.running.render(c, g);
+        if let Some(action) = self.cur_action {
+            let id = action as usize;
+            self.animations[id].render(c, g);
+        }
     }
 }
 
 impl Updatable for Character {
     fn update(&mut self, upd: UpdateArgs) {
-        self.running.update(upd);
+        if let Some(action) = self.cur_action {
+            let id = action as usize;
+            self.animations[id].update(upd);
+        }
     }
 }

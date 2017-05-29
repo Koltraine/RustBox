@@ -10,6 +10,7 @@ error-chain = "0.10"
 itertools = "^0.6"
 rand = "^0.3"
 find_folder = "^0.3"
+enum_primitive = "^0.1"
 
 # Physics
 nalgebra = "^0.11"

@@ -10,6 +10,8 @@
 // General use
 #[macro_use]
 extern crate error_chain;
+#[macro_use] 
+extern crate enum_primitive;
 extern crate find_folder;
 extern crate rand;
 extern crate itertools;
@@ -42,6 +44,8 @@ use ncollide::shape;
 //use nalgebra::geometry::Similarity;
 use character::Character;
 use image_ops::TileMap;
+use character::Action;
+use image_ops::Animation;
 
 use objects::{Ball, Renderable, Updatable, GameObject};
 use std::fs::File;
@@ -157,7 +161,10 @@ fn main() {
         tilemap.texture([10, 4], &mut window.factory).unwrap(),
         tilemap.texture([11, 4], &mut window.factory).unwrap()
     ];
-    let mut player = player::Player::new(Character::new(running));
+    let mut character = Character::new();
+    character.set_animation(Action::Running, Animation::new(8.0, running));
+    character.set_action(Some(Action::Running));
+    let mut player = player::Player::new(character);
 
     while let Some(e) = window.next() {
         match e {
