@@ -5,11 +5,17 @@
 // to the terms of that license.
 
 use std::rc::Rc;
-use piston_window::{image, G2dTexture, UpdateArgs, G2d, Context};
+use piston_window::{Transformed, image, G2dTexture, UpdateArgs, G2d, Context};
 use piston_window::math::Matrix2d;
 use objects::{Renderable, Updatable};
 use std::mem;
 use std::borrow::Borrow;
+
+//TODO: Is this constant?
+const INIT_TRANSFORM: Matrix2d = [
+    [0.003125, 0.0, -1.0],
+    [0.0, -0.004166666666666667, 1.0]
+];
 
 pub struct Animation {
     frames: Vec<Rc<G2dTexture>>,
@@ -24,7 +30,7 @@ impl Animation {
         Animation {
             fps,
             frames,
-            transform: [[0.0; 3]; 2],
+            transform: INIT_TRANSFORM,
             current_timer: 0.0,
         }
     }
@@ -34,14 +40,13 @@ impl Animation {
     pub fn current_frame(&self) -> usize {
         (self.fps * self.current_timer) as usize % self.frames.len()
     }
-
 }
 
 impl Renderable for Animation {
      fn render(&self, c: Context, g: &mut G2d) {
          let i = self.current_frame();
          let tex = self.frames[i].borrow();
-         image(tex, self.transform, g)
+         image(tex, self.transform, g);
      }
 }
 

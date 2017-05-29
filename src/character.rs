@@ -21,12 +21,13 @@ pub struct Character {
     running: Animation,
 }
 
+//TODO: Should we implement graphics::Transformed?
 impl Character {
     pub fn new(frames: Vec<Rc<G2dTexture>>) -> Character {
         let mut c = Character {
-            running: Animation::new(4.0, frames),
+            running: Animation::new(8.0, frames),
         };
-        c.running.transform = [[0.003125, 0.0, -0.375], [0.0, -0.004166666666666667, 0.16666666666666663]];
+        c.running.transform = c.running.transform.trans(200.0, 200.0);
         c
     }
 }
