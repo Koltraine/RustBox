@@ -16,22 +16,23 @@ use gfx::Factory;
 use gfx_device_gl::Resources;
 use piston_window::{Input, clear, Transformed};
 use image_ops::Animation;
+use std::collections::HashMap;
 
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
 pub enum Action {
     Running,
 }
 
 pub struct Character {
     cur_action: Option<Action>,
-    animations: Vec<Animation>,
+    animations: HashMap<Action, Animation>,
 }
 
 //TODO: Should we implement graphics::Transformed?
 impl Character {
     pub fn new() -> Character {
         Character {
-            animations: vec![],
+            animations: HashMap::new(),
             cur_action: None,
         }
     }
@@ -41,17 +42,16 @@ impl Character {
     }
 
     pub fn set_animation(&mut self, action: Action, anim: Animation) {
-        let id = action as usize;
-        //TODO: Is insert right?
-        self.animations.insert(id, anim);
+        self.animations.insert(action, anim);
     }
 }
 
 impl Renderable for Character {
     fn render(&self, c: Context, g: &mut G2d) {
         if let Some(action) = self.cur_action {
-            let id = action as usize;
-            self.animations[id].render(c, g);
+            if let Some(anim) = self.animations.get(&action) {
+                anim.render(c, g);
+            }
         }
     }
 }
@@ -59,8 +59,9 @@ impl Renderable for Character {
 impl Updatable for Character {
     fn update(&mut self, upd: UpdateArgs) {
         if let Some(action) = self.cur_action {
-            let id = action as usize;
-            self.animations[id].update(upd);
+            if let Some(anim) = self.animations.get_mut(&action) {
+                anim.update(upd);
+            }
         }
     }
 }
