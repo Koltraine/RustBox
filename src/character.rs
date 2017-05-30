@@ -4,23 +4,45 @@
 // This file may not be copied, modified, or distributed except according
 // to the terms of that license.
 
-use sprite::{Scene, Sprite};
-use texture::ImageSize;
-use piston_window::{Flip, Texture, TextureSettings};
-use std::rc::Rc;
 use objects::{Renderable, Updatable};
-use piston_window::{G2dTexture, Context, G2d, UpdateArgs};
-use image::ImageBuffer;
-use std::path::PathBuf;
-use gfx::Factory;
-use gfx_device_gl::Resources;
-use piston_window::{Input, clear, Transformed};
+use piston_window::{Context, G2d, UpdateArgs};
 use image_ops::Animation;
 use std::collections::HashMap;
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
-pub enum Action {
+pub enum ActionDirection {
+    N,
+    NE,
+    E,
+    SE,
+    S,
+    SW,
+    W,
+    NW
+}
+
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+pub enum ActionName {
     Running,
+    Idle,
+    Attack,
+    Death,
+    Headshot,
+}
+
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Debug)]
+pub struct Action {
+    pub action: ActionName,
+    pub direction: ActionDirection,
+}
+
+impl Action {
+    pub fn new(action: ActionName, direction: ActionDirection) -> Action {
+        Action {
+            action,
+            direction,
+        }
+    }
 }
 
 pub struct Character {

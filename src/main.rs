@@ -41,11 +41,10 @@ use nphysics2d::world::World;
 use nalgebra::{TranslationBase, Vector2};
 use nphysics2d::object::{RigidBody, RigidBodyHandle};
 use ncollide::shape;
-//use nalgebra::geometry::Similarity;
-use character::Character;
-use image_ops::TileMap;
-use character::Action;
-use image_ops::Animation;
+
+use character::{Action, Character, ActionDirection, ActionName};
+use image_ops::{TileMap, Animation};
+use player::Player;
 
 use objects::{Ball, Renderable, Updatable, GameObject};
 use std::fs::File;
@@ -145,26 +144,8 @@ fn main() {
     //let map = map::TiledMap::new(9213);
     //game.objects.push(Box::new(map));
 
-    let tex_dir = find_folder::Search::ParentsThenKids(3, 3)
-        .for_folder("textures").unwrap();
-    println!("{:?}", tex_dir);
 
-    let t = tex_dir.join("zombie").join("zombie_0.png");
-    let tilemap = TileMap::new(t, [128, 128]);
-    let running = vec![
-        tilemap.texture([ 4, 4], &mut window.factory).unwrap(),
-        tilemap.texture([ 5, 4], &mut window.factory).unwrap(),
-        tilemap.texture([ 6, 4], &mut window.factory).unwrap(),
-        tilemap.texture([ 7, 4], &mut window.factory).unwrap(),
-        tilemap.texture([ 8, 4], &mut window.factory).unwrap(),
-        tilemap.texture([ 9, 4], &mut window.factory).unwrap(),
-        tilemap.texture([10, 4], &mut window.factory).unwrap(),
-        tilemap.texture([11, 4], &mut window.factory).unwrap()
-    ];
-    let mut character = Character::new();
-    character.set_animation(Action::Running, Animation::new(8.0, running));
-    character.set_action(Some(Action::Running));
-    let mut player = player::Player::new(character);
+    let mut player = gen_player(window.factory.clone());
 
     while let Some(e) = window.next() {
         match e {
@@ -201,4 +182,63 @@ fn init_world(w: &mut World<f32>) {
     w.add_rigid_body(rb);
 
 
+}
+
+fn gen_player(mut factory: gfx_device_gl::Factory) -> Player {
+    let tex_dir = find_folder::Search::ParentsThenKids(3, 3)
+        .for_folder("textures").unwrap();
+    println!("{:?}", tex_dir);
+
+    let mut character = Character::new();
+
+    let directions = [
+        ActionDirection::W,
+        ActionDirection::NW,
+        ActionDirection::N,
+        ActionDirection::NE,
+        ActionDirection::E,
+        ActionDirection::SE,
+        ActionDirection::S,
+        ActionDirection::SW,
+    ];
+
+    let actions = [
+        // Number of frames, FPS, Action
+        ( 4, 8.0, ActionName::Idle),
+        ( 8, 8.0, ActionName::Running),
+        (10, 8.0, ActionName::Attack),
+        ( 6, 8.0, ActionName::Death),
+        ( 8, 8.0, ActionName::Headshot),
+    ];
+
+    let t = tex_dir.join("zombie").join("zombie_0.png");
+    let tilemap = TileMap::new(t, [128, 128]);
+    for d in 0..directions.len() {
+        for a in 0..actions.len() {
+            let mut frames = vec![];
+            let dir = directions[d];
+            let action = actions[a];
+            let frame_count = action.0;
+            let fps = action.1;
+            let action_struct = Action::new(action.2, dir);
+
+            let row = d;
+            let start_column = actions.iter()
+                                      .take(a)
+                                      .fold(0, |z, i| z + i.0);
+            let end_column = start_column + frame_count;
+
+            for c in start_column..end_column {
+                frames.push(tilemap.texture(
+                        [c as u32, row as u32],
+                        &mut factory
+                ).unwrap());
+            }
+
+            character.set_animation(action_struct, Animation::new(fps, frames));
+        }
+    }
+
+    character.set_action(Some(Action::new(ActionName::Running, ActionDirection::N)));
+    Player::new(character)
 }
