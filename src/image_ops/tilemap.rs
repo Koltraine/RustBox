@@ -4,16 +4,13 @@
 // This file may not be copied, modified, or distributed except according
 // to the terms of that license.
 
-use sprite::{Scene, Sprite};
-use texture::ImageSize;
-use piston_window::{Flip, Texture, TextureSettings};
+use piston_window::{Texture, TextureSettings};
 use std::rc::Rc;
-use objects::{Renderable, Updatable};
-use piston_window::{G2dTexture, Context, G2d, UpdateArgs};
+use piston_window::G2dTexture;
 use std::path::PathBuf;
 use gfx::Factory;
 use gfx_device_gl::Resources;
-use image::{Rgba, Pixel, ImageBuffer, GenericImage};
+use image::{Rgba, ImageBuffer, GenericImage};
 use image;
 
 error_chain! {
@@ -38,6 +35,7 @@ impl TileMap {
         }
     }
 
+    /// Creates a texture by index
     pub fn texture<F: Factory<Resources>, I: Into<[u32; 2]>>(&self, index: I, factory: &mut F) -> Result<Rc<G2dTexture>> {
         let r = index.into();
         let x = r[0] * self.tile_dimensions[0];

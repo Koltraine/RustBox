@@ -7,14 +7,19 @@
 mod ball;
 
 pub use self::ball::Ball;
-use piston_window::{Context, G2d, UpdateArgs};
+use piston_window::{Input, Context, G2d, UpdateArgs};
 
+//TODO: We should move these out of there
 pub trait Renderable {
      fn render(&self, c: Context, g: &mut G2d);
 }
 
 pub trait Updatable {
     fn update(&mut self, upd: UpdateArgs);
+}
+
+pub trait EventHandler {
+    fn event(&mut self, event: &Input);
 }
 
 pub trait GameObject: Updatable + Renderable {}

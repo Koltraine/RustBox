@@ -10,11 +10,12 @@
 // General use
 #[macro_use]
 extern crate error_chain;
-#[macro_use] 
+#[macro_use]
 extern crate enum_primitive;
 extern crate find_folder;
 extern crate rand;
 extern crate itertools;
+extern crate num;
 
 // Physics
 extern crate ncollide;
@@ -26,7 +27,9 @@ extern crate piston_window;
 extern crate sprite;
 extern crate texture;
 extern crate gfx;
-extern crate gfx_device_gl; // do we need this?
+//TODO: I would really like to make the code generic so that we dont need this
+// This would probably involve droping piston_window
+extern crate gfx_device_gl;
 extern crate gfx_core;
 extern crate image;
 
@@ -46,7 +49,7 @@ use character::{Action, Character, ActionDirection, ActionName};
 use image_ops::{TileMap, Animation};
 use player::Player;
 
-use objects::{Ball, Renderable, Updatable, GameObject};
+use objects::{Ball, Renderable, Updatable, EventHandler, GameObject};
 use std::fs::File;
 use std::rc::Rc;
 
@@ -148,6 +151,7 @@ fn main() {
     let mut player = gen_player(window.factory.clone());
 
     while let Some(e) = window.next() {
+        player.event(&e);
         match e {
             Input::Render(r) => {
                 window.draw_2d(&e, |c, g| {
@@ -191,6 +195,8 @@ fn gen_player(mut factory: gfx_device_gl::Factory) -> Player {
 
     let mut character = Character::new();
 
+    // These are the directions in the order that they
+    // appear on the texture sheet
     let directions = [
         ActionDirection::W,
         ActionDirection::NW,
@@ -202,6 +208,8 @@ fn gen_player(mut factory: gfx_device_gl::Factory) -> Player {
         ActionDirection::SW,
     ];
 
+    // These are the actions in the order that they
+    // appear on the texture sheet
     let actions = [
         // Number of frames, FPS, Action
         ( 4, 8.0, ActionName::Idle),
@@ -239,6 +247,6 @@ fn gen_player(mut factory: gfx_device_gl::Factory) -> Player {
         }
     }
 
-    character.set_action(Some(Action::new(ActionName::Running, ActionDirection::N)));
+    character.set_action(Some(Action::new(ActionName::Death, ActionDirection::N)));
     Player::new(character)
 }
