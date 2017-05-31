@@ -80,9 +80,24 @@ impl Renderable for Character {
 
 impl Updatable for Character {
     fn update(&mut self, upd: UpdateArgs) {
+        let directions = [
+            ActionDirection::N,
+            ActionDirection::NE,
+            ActionDirection::E,
+            ActionDirection::SE,
+            ActionDirection::S,
+            ActionDirection::SW,
+            ActionDirection::W,
+            ActionDirection::NW
+        ];
+
         if let Some(action) = self.cur_action {
-            if let Some(anim) = self.animations.get_mut(&action) {
-                anim.update(upd);
+            let mut action = action.clone();
+            for d in directions.into_iter() {
+                action.direction = *d;
+                if let Some(anim) = self.animations.get_mut(&action) {
+                    anim.update(upd);
+                }
             }
         }
     }
