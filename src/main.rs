@@ -211,12 +211,12 @@ fn gen_player(mut factory: gfx_device_gl::Factory) -> Player {
     // These are the actions in the order that they
     // appear on the texture sheet
     let actions = [
-        // Number of frames, FPS, Action
-        ( 4, 8.0, ActionName::Idle),
-        ( 8, 8.0, ActionName::Running),
-        (10, 8.0, ActionName::Attack),
-        ( 6, 8.0, ActionName::Death),
-        ( 8, 8.0, ActionName::Headshot),
+        // Run Once, Number of frames, FPS, Action
+        (false,  4, 8.0, ActionName::Idle),
+        (false,  8, 8.0, ActionName::Running),
+        (false, 10, 8.0, ActionName::Attack),
+        (true,   6, 8.0, ActionName::Death),
+        (true,   8, 8.0, ActionName::Headshot),
     ];
 
     let t = tex_dir.join("zombie").join("zombie_0.png");
@@ -226,14 +226,15 @@ fn gen_player(mut factory: gfx_device_gl::Factory) -> Player {
             let mut frames = vec![];
             let dir = directions[d];
             let action = actions[a];
-            let frame_count = action.0;
-            let fps = action.1;
-            let action_struct = Action::new(action.2, dir);
+            let run_once = action.0;
+            let frame_count = action.1;
+            let fps = action.2;
+            let action_struct = Action::new(action.3, dir);
 
             let row = d;
             let start_column = actions.iter()
                                       .take(a)
-                                      .fold(0, |z, i| z + i.0);
+                                      .fold(0, |z, i| z + i.1);
             let end_column = start_column + frame_count;
 
             for c in start_column..end_column {
@@ -243,7 +244,10 @@ fn gen_player(mut factory: gfx_device_gl::Factory) -> Player {
                 ).unwrap());
             }
 
-            character.set_animation(action_struct, Animation::new(fps, frames));
+            character.set_animation(
+                action_struct,
+                Animation::new(fps, frames).run_once(run_once)
+            );
         }
     }
 
