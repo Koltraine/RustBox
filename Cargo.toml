@@ -13,6 +13,9 @@ find_folder = "^0.3"
 enum_primitive = "^0.1"
 num = "^0.1"
 
+# Map
+tiled = "^0.5"
+
 # Physics
 nalgebra = "^0.11"
 ncollide = "^0.11"

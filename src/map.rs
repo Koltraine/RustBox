@@ -6,6 +6,7 @@
 
 use piston_window::*;
 use objects::{Renderable, Updatable, GameObject};
+use tiled;
 use rand;
 use rand::Rng;
 

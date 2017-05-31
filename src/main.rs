@@ -17,6 +17,9 @@ extern crate rand;
 extern crate itertools;
 extern crate num;
 
+// Map
+extern crate tiled;
+
 // Physics
 extern crate ncollide;
 extern crate nalgebra;
