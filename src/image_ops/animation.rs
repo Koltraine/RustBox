@@ -48,6 +48,11 @@ impl Animation {
         self.run_once = ro;
         self
     }
+
+    /// Resume the animation if it has stopped due to `run_once`
+    pub fn resume(&mut self) {
+        self.current_timer = 0.0;
+    }
 }
 
 impl Renderable for Animation {
