@@ -4,16 +4,10 @@
 // This file may not be copied, modified, or distributed except according
 // to the terms of that license.
 
-use find_folder;
-use piston_window::image::Image;
 use piston_window::*;
-use nphysics2d::object::{RigidBodyHandle};
 use objects::{Renderable, Updatable, GameObject};
-use std::io::Read;
 use rand;
-use rand::distributions::Range;
 use rand::Rng;
-use itertools::Itertools;
 
 error_chain!{
     errors { Fail }

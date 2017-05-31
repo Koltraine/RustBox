@@ -42,7 +42,7 @@ mod image_ops;
 use piston_window::*;
 use nphysics2d::world::World;
 use nalgebra::{TranslationBase, Vector2};
-use nphysics2d::object::{RigidBody, RigidBodyHandle};
+use nphysics2d::object::RigidBody;
 use ncollide::shape;
 
 use character::{Action, Character, ActionDirection, ActionName};
@@ -50,14 +50,11 @@ use image_ops::{TileMap, Animation};
 use player::Player;
 
 use objects::{Ball, Renderable, Updatable, EventHandler, GameObject};
-use std::fs::File;
-use std::rc::Rc;
 
 
 struct Game {
     world: World<f32>,
     timer: f32,
-    ground_y: f32,
     // TODO: This box isn't very good, can we do better?
     objects: Vec<Box<GameObject>>,
 }
@@ -70,7 +67,6 @@ impl Game {
         Game {
             world: world,
             timer: 0.0f32,
-            ground_y: 0.0f32,
             objects: vec![],
         }
     }
@@ -141,7 +137,7 @@ fn main() {
 
     let ref font = fonts.join("FiraSans-Regular.ttf");
     let factory = window.factory.clone();
-    let mut glyphs = Glyphs::new(font, factory).unwrap();
+    let glyphs = Glyphs::new(font, factory).unwrap();
 
 
     //let map = map::TiledMap::new(9213);
@@ -153,7 +149,7 @@ fn main() {
     while let Some(e) = window.next() {
         player.event(&e);
         match e {
-            Input::Render(r) => {
+            Input::Render(_) => {
                 window.draw_2d(&e, |c, g| {
                     game.render(c, g);
                     player.render(c, g);

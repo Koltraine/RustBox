@@ -4,16 +4,10 @@
 // This file may not be copied, modified, or distributed except according
 // to the terms of that license.
 
-use sprite::{Scene, Sprite};
-use texture::ImageSize;
-use piston_window::Texture;
-use std::rc::Rc;
 use objects::{EventHandler, Renderable, Updatable};
 use piston_window::{Key, Input, Context, G2d, UpdateArgs, Button};
 use character::{Action, ActionDirection, ActionName};
-use image::ImageBuffer;
 use character::Character;
-use gfx::{Resources, Factory};
 
 pub struct Player {
     character: Character,

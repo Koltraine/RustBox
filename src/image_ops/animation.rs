@@ -5,10 +5,9 @@
 // to the terms of that license.
 
 use std::rc::Rc;
-use piston_window::{Transformed, image, G2dTexture, UpdateArgs, G2d, Context};
+use piston_window::{image, G2dTexture, UpdateArgs, G2d, Context};
 use piston_window::math::Matrix2d;
 use objects::{Renderable, Updatable};
-use std::mem;
 use std::borrow::Borrow;
 
 //TODO: Is this constant?
@@ -56,7 +55,7 @@ impl Animation {
 }
 
 impl Renderable for Animation {
-     fn render(&self, c: Context, g: &mut G2d) {
+     fn render(&self, _: Context, g: &mut G2d) {
          let i = self.current_frame();
          let tex = self.frames[i].borrow();
          image(tex, self.transform, g);
