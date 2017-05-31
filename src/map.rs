@@ -33,6 +33,7 @@ impl TiledMap {
 
 impl Renderable for TiledMap {
     fn render(&self, c: Context, g: &mut G2d) {
+
     }
 }
 

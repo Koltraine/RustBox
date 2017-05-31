@@ -20,16 +20,16 @@ error_chain! {
 }
 
 /// Produces textures from a tilemap texture
-pub struct TileMap {
+pub struct TileBuffer {
     image: ImageBuffer<Rgba<u8>, Vec<u8>>,
     tile_dimensions: [u32; 2],
 }
 
-impl TileMap {
-    pub fn new(file: PathBuf, tile_dimensions: [u32; 2]) -> TileMap {
+impl TileBuffer {
+    pub fn new(file: PathBuf, tile_dimensions: [u32; 2]) -> TileBuffer {
         let img = image::open(file).unwrap();
 
-        TileMap {
+        TileBuffer {
             image: img.to_rgba(),
             tile_dimensions,
         }

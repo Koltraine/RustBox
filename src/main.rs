@@ -49,7 +49,7 @@ use nphysics2d::object::RigidBody;
 use ncollide::shape;
 
 use character::{Action, Character, ActionDirection, ActionName};
-use image_ops::{TileMap, Animation};
+use image_ops::{TileBuffer, Animation};
 use player::Player;
 
 use objects::{Ball, Renderable, Updatable, EventHandler, GameObject};
@@ -219,7 +219,7 @@ fn gen_player(mut factory: gfx_device_gl::Factory) -> Player {
     ];
 
     let t = tex_dir.join("zombie").join("zombie_0.png");
-    let tilemap = TileMap::new(t, [128, 128]);
+    let tilemap = TileBuffer::new(t, [128, 128]);
     for d in 0..directions.len() {
         for a in 0..actions.len() {
             let mut frames = vec![];

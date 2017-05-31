@@ -4,8 +4,8 @@
 // This file may not be copied, modified, or distributed except according
 // to the terms of that license.
 
-mod tilemap;
+mod tilebuffer;
 mod animation;
 
-pub use self::tilemap::TileMap;
+pub use self::tilebuffer::TileBuffer;
 pub use self::animation::Animation;
