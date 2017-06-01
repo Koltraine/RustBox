@@ -95,14 +95,15 @@ impl TiledMap {
             return;
         }
 
-        for row in layer.tiles.iter() {
-            for tile_id in row.iter() {
-                self.render_tile(*tile_id, c, g);
+        for row in 0..layer.tiles.len() {
+            for column in 0..layer.tiles[row].len() {
+                let tile_id = layer.tiles[row][column];
+                self.render_tile(tile_id, [column, row], c, g);
             }
         }
     }
 
-    fn render_tile(&self, tile: u32, c: Context, g: &mut G2d) {
+    fn render_tile(&self, tile: u32, render_pos: [usize; 2], c: Context, g: &mut G2d) {
         let tileset = match self.map.get_tileset_by_gid(tile) {
             Some(t) => t,
             None => return,
@@ -111,13 +112,13 @@ impl TiledMap {
         let img = &tileset.images[0];
         let t = self.texture_buffers.get(&img.source).unwrap();
         let texture_index = [
-            tile % 23,
-            tile / 23,
+            tile as usize % t.len(),
+            tile as usize / t.len(),
         ];
-        let tex = &t[texture_index[0] as usize][texture_index[1] as usize];
+        let tex = &t[texture_index[0]][texture_index[1]];
         image(tex.borrow(), c.transform.trans(
-            (texture_index[0] * 16) as f64,
-            (texture_index[1] * 16) as f64,
+            (render_pos[0] * 16) as f64,
+            (render_pos[1] * 16) as f64,
         ), g);
     }
 }
