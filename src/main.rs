@@ -35,6 +35,7 @@ extern crate gfx;
 extern crate gfx_device_gl;
 extern crate gfx_core;
 extern crate image;
+extern crate fps_counter;
 
 mod objects;
 mod map;
@@ -159,6 +160,8 @@ fn main() {
     let map_path = maps.join("ayymap.tmx");
     let mut map = TiledMap::new(&map_path, &mut window.factory.clone()).unwrap();
 
+    let mut fps_counter = fps_counter::FPSCounter::new();
+
     while let Some(e) = window.next() {
         player.event(&e);
         match e {
@@ -168,6 +171,8 @@ fn main() {
                     map.render(c, g);
                     player.render(c, g);
                 });
+                let fps = fps_counter.tick();
+                println!("FPS: {}", fps);
             }
             Input::Update(u) => {
                 map.update(u);

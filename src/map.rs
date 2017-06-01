@@ -6,9 +6,8 @@
 
 use piston_window::*;
 use objects::{Renderable, Updatable};
-use tiled::{parse, Layer, Tile};
+use tiled::{parse, Layer};
 use tiled;
-use std::io::Read;
 use std::path::Path;
 use image_ops::TileBuffer;
 use std::collections::HashMap;
@@ -25,6 +24,11 @@ error_chain!{
     }
 }
 
+// TODO: Check how fast the render time for this is
+// Maybe we could cache the final map,
+// so render the whole thing into a final buffer
+// and render that as an image
+// we then only have to re-render it if the camera moves
 pub struct TiledMap {
     map: tiled::Map,
     // This feels a bit like a hack
