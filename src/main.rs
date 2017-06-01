@@ -42,6 +42,8 @@ mod player;
 mod character;
 mod image_ops;
 
+use std::fs::File;
+
 use piston_window::*;
 use nphysics2d::world::World;
 use nalgebra::{TranslationBase, Vector2};
@@ -51,6 +53,7 @@ use ncollide::shape;
 use character::{Action, Character, ActionDirection, ActionName};
 use image_ops::{TileBuffer, Animation};
 use player::Player;
+use map::TiledMap;
 
 use objects::{Ball, Renderable, Updatable, EventHandler, GameObject};
 
@@ -149,16 +152,25 @@ fn main() {
 
     let mut player = gen_player(window.factory.clone());
 
+
+    let maps = find_folder::Search::ParentsThenKids(3, 3)
+        .for_folder("maps").unwrap();
+    println!("{:?}", maps);
+    let map_path = maps.join("ayymap.tmx");
+    let mut map = TiledMap::new(&map_path, &mut window.factory.clone()).unwrap();
+
     while let Some(e) = window.next() {
         player.event(&e);
         match e {
             Input::Render(_) => {
                 window.draw_2d(&e, |c, g| {
                     game.render(c, g);
+                    map.render(c, g);
                     player.render(c, g);
                 });
             }
             Input::Update(u) => {
+                map.update(u);
                 game.update(u);
                 player.update(u);
             }

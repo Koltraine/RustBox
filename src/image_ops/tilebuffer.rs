@@ -88,4 +88,10 @@ impl TileBuffer {
             Err(err) => Err(ErrorKind::TextureCreation(err).into()),
         }
     }
+
+    /// The dimension of the tilemap
+    pub fn tiles_available(&self) -> [u32; 2] {
+        let dim = self.image.dimensions();
+        [dim.0 / self.tile_dimensions[0], dim.1 / self.tile_dimensions[1]]
+    }
 }
