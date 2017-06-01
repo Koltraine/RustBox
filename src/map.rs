@@ -115,10 +115,15 @@ impl TiledMap {
             tile as usize % t.len(),
             tile as usize / t.len(),
         ];
-        let tex = &t[texture_index[0]][texture_index[1]];
+
+        // TODO:
+        // This is very wrong
+        // but hey
+        // it works!
+        let tex = &t[texture_index[0]-1][texture_index[1]];
         image(tex.borrow(), c.transform.trans(
-            (render_pos[0] * 16) as f64,
-            (render_pos[1] * 16) as f64,
+            (render_pos[0] * tileset.tile_width as usize) as f64,
+            (render_pos[1] * tileset.tile_height as usize) as f64,
         ), g);
     }
 }
