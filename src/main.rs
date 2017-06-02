@@ -139,15 +139,6 @@ fn main() {
     }
     game.objects.push(Box::new(Ball::new(100.0, handle)));
 
-    //init_world(&mut game.world);
-    //
-
-
-    //let map = map::TiledMap::new(9213);
-    //game.objects.push(Box::new(map));
-
-
-    let mut player = gen_player(window.factory.clone());
 
 
     let maps = find_folder::Search::ParentsThenKids(3, 3)
@@ -156,6 +147,7 @@ fn main() {
     let map_path = maps.join("ayymap.tmx");
     let mut map = TiledMap::new(&map_path, &mut window.factory.clone()).unwrap();
 
+    let mut player = gen_player(window.factory.clone());
     let mut fps_counter = fps_counter::FPSCounter::new();
     let mut ui = ui::Ui::new(&mut window.factory.clone());
 
@@ -184,23 +176,6 @@ fn main() {
             _ => {} // Catch unhandled event
         }
     }
-}
-
-fn init_world(w: &mut World<f64>) {
-
-
-    /*
-     * First plane
-     */
-    let mut rb = RigidBody::new_static(
-        shape::Plane::new(Vector2::new(0.0, 1.0)),
-        0.3,
-        0.6
-    );
-    rb.append_translation(&TranslationBase::from_vector(Vector2::new(0.0, 300.0)));
-    w.add_rigid_body(rb);
-
-
 }
 
 fn gen_player(mut factory: gfx_device_gl::Factory) -> Player {

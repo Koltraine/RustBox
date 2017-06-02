@@ -72,9 +72,10 @@ impl Ui {
             let ui = &mut ui.set_widgets();
 
             // "Hello World!" in the middle of the screen.
-            widget::Text::new("Hello World!")
+            widget::Text::new("FanCY tExT")
                 .middle_of(ui.window)
-                .color(conrod::color::WHITE)
+                .color(conrod::color::LIGHT_RED)
+                .line_spacing(2.5)
                 .font_size(64)
                 .set(ids.text, ui);
         }
