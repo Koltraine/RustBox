@@ -21,7 +21,7 @@ error_chain! {
 
 /// Produces textures from a tilemap texture
 pub struct TileBuffer {
-    image: ImageBuffer<Rgba<u8>, Vec<u8>>,
+    buffer: ImageBuffer<Rgba<u8>, Vec<u8>>,
     tile_dimensions: [u32; 2],
 }
 
@@ -30,13 +30,28 @@ impl TileBuffer {
         let img = image::open(file).unwrap();
 
         TileBuffer {
-            image: img.to_rgba(),
+            buffer: img.to_rgba(),
             tile_dimensions,
         }
     }
 
-    /// Creates a texture by index
-    pub fn texture<F: Factory<Resources>, I: Into<[u32; 2]>>(&self, index: I, factory: &mut F) -> Result<Rc<G2dTexture>> {
+    /// Creates a ImageBuffer by coordinate
+    pub fn image_coord<R: Into<[u32; 4]>>(&self, rect: R) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
+        let r = rect.into();
+        let (x, y, w, h) = (r[0], r[1], r[2], r[3]);
+
+        // The clone (in my opinion) shouldn't be necessary, it is only here
+        // because sub_image requires a mut, however for this operation
+        // it shouldnt be necessary to clone the whole image
+        self.buffer
+            .clone()
+            .sub_image(x,y,w,h)
+            .to_image()
+    }
+
+
+    /// Creates a ImageBuffer by index
+    pub fn image<I: Into<[u32; 2]>>(&self, index: I) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
         let r = index.into();
         let x = r[0] * self.tile_dimensions[0];
         let y = r[1] * self.tile_dimensions[1];
@@ -46,11 +61,16 @@ impl TileBuffer {
         // The clone (in my opinion) shouldn't be necessary, it is only here
         // because sub_image requires a mut, however for this operation
         // it shouldnt be necessary to clone the whole image
-        let new_img = self.image
+        self.buffer
             .clone()
             .sub_image(x,y,w,h)
-            .to_image();
+            .to_image()
+    }
 
+
+    /// Creates a texture by index
+    pub fn texture<F: Factory<Resources>, I: Into<[u32; 2]>>(&self, index: I, factory: &mut F) -> Result<Rc<G2dTexture>> {
+        let new_img = self.image(index);
         let tx_res = Texture::from_image(
                 factory,
                 &new_img,
@@ -66,17 +86,7 @@ impl TileBuffer {
     /// Creates a texture from the image giving absolute coordinates instead
     /// of indices
     pub fn texture_coord<F: Factory<Resources>, R: Into<[u32; 4]>>(&self, rect: R, factory: &mut F) -> Result<Rc<G2dTexture>> {
-        let r = rect.into();
-        let (x, y, w, h) = (r[0], r[1], r[2], r[3]);
-
-        // The clone (in my opinion) shouldn't be necessary, it is only here
-        // because sub_image requires a mut, however for this operation
-        // it shouldnt be necessary to clone the whole image
-        let new_img = self.image
-            .clone()
-            .sub_image(x,y,w,h)
-            .to_image();
-
+        let new_img = self.image_coord(rect);
         let tx_res = Texture::from_image(
                 factory,
                 &new_img,
@@ -91,7 +101,7 @@ impl TileBuffer {
 
     /// The dimension of the tilemap
     pub fn tiles_available(&self) -> [u32; 2] {
-        let dim = self.image.dimensions();
+        let dim = self.buffer.dimensions();
         [dim.0 / self.tile_dimensions[0], dim.1 / self.tile_dimensions[1]]
     }
 }
