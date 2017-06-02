@@ -55,7 +55,7 @@ impl Animation {
 }
 
 impl Renderable for Animation {
-     fn render(&self, _: Context, g: &mut G2d) {
+     fn render(&mut self, _: Context, g: &mut G2d) {
          let i = self.current_frame();
          let tex = self.frames[i].borrow();
          image(tex, self.transform, g);

@@ -81,7 +81,10 @@ impl Ui {
 
 
 
-    pub fn render(&mut self, c: Context, g: &mut G2d) {
+}
+
+impl Renderable for Ui {
+    fn render(&mut self, c: Context, g: &mut G2d) {
         let mut text_vertex_data = Vec::new();
         let primitives = self.ui.draw();
 

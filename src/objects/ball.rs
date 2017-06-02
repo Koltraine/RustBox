@@ -24,7 +24,7 @@ impl Ball {
 }
 
 impl Renderable for Ball {
-     fn render(&self, c: Context, g: &mut G2d) {
+     fn render(&mut self, c: Context, g: &mut G2d) {
         let body = self.body.borrow();
 
         let pos = body.position().translation.vector.data;

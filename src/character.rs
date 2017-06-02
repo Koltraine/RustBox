@@ -69,9 +69,9 @@ impl Character {
 }
 
 impl Renderable for Character {
-    fn render(&self, c: Context, g: &mut G2d) {
+    fn render(&mut self, c: Context, g: &mut G2d) {
         if let Some(action) = self.cur_action {
-            if let Some(anim) = self.animations.get(&action) {
+            if let Some(anim) = self.animations.get_mut(&action) {
                 anim.render(c, g);
             }
         }

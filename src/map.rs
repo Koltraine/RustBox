@@ -87,7 +87,7 @@ impl TiledMap {
 }
 
 impl Renderable for TiledMap {
-    fn render(&self, c: Context, g: &mut G2d) {
+    fn render(&mut self, c: Context, g: &mut G2d) {
         for layer in self.map.layers.iter() {
             self.render_layer(layer, c, g);
         }

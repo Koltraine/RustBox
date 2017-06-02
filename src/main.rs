@@ -91,9 +91,9 @@ impl Game {
         }
     }
 
-    pub fn render(&self, c: Context, g: &mut G2d) {
+    pub fn render(&mut self, c: Context, g: &mut G2d) {
         clear([0.525, 0.941, 0.945, 1.0], g);
-        for object in &self.objects {
+        for object in &mut self.objects {
             object.render(c, g);
         }
     }

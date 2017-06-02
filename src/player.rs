@@ -22,7 +22,7 @@ impl Player {
 }
 
 impl Renderable for Player {
-    fn render(&self, c: Context, g: &mut G2d) {
+    fn render(&mut self, c: Context, g: &mut G2d) {
         self.character.render(c, g);
     }
 }

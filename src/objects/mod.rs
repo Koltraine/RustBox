@@ -11,7 +11,8 @@ use piston_window::{Input, Context, G2d, UpdateArgs};
 
 //TODO: We should move these out of there
 pub trait Renderable {
-     fn render(&self, c: Context, g: &mut G2d);
+    // Please don't use this mut self to update heavy logic
+    fn render(&mut self, c: Context, g: &mut G2d);
 }
 
 pub trait Updatable {
