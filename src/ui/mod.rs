@@ -4,20 +4,28 @@
 // This file may not be copied, modified, or distributed except according
 // to the terms of that license.
 
-use conrod::{self, widget, Labelable, Positionable, Sizeable, Widget};
-use piston_window::{PistonWindow, UpdateEvent, Window, WindowSettings};
-use piston_window::{Flip, G2d, G2dTexture, Texture, TextureSettings};
-use piston_window::{OpenGL, Input, UpdateArgs, Context};
-use piston_window::texture::UpdateTexture;
+use conrod::{self, widget, Positionable, Widget};
+use piston_window::{G2d, G2dTexture, TextureSettings};
+use piston_window::{Input, UpdateArgs, Context};
+use piston_window::texture::{UpdateTexture, Format};
 use piston_window;
 use find_folder;
 use std;
-use gfx::Factory;
+use gfx::{Factory, UpdateError};
 use gfx_device_gl::Resources;
 use conrod::Colorable;
 use conrod::text::GlyphCache;
 use conrod::image::Map;
+use conrod::backend::piston::draw;
 use objects::{Renderable, EventHandler, Updatable};
+
+// Generate a unique `WidgetId` for each widget.
+widget_ids! {
+    pub struct Ids {
+        text,
+    }
+}
+
 
 pub struct Ui {
     ui: conrod::Ui,
@@ -78,47 +86,57 @@ impl Ui {
             ui,
         }
     }
-
-
-
 }
 
 impl Renderable for Ui {
     fn render(&mut self, c: Context, g: &mut G2d) {
-        let mut text_vertex_data = Vec::new();
         let primitives = self.ui.draw();
 
-        // A function used for caching glyphs to the texture cache.
-        let cache_queued_glyphs = |graphics: &mut G2d,
-        cache: &mut G2dTexture,
-        rect: conrod::text::rt::Rect<u32>,
-        data: &[u8]|
-        {
-            let offset = [rect.min.x, rect.min.y];
-            let size = [rect.width(), rect.height()];
-            let format = piston_window::texture::Format::Rgba8;
-            let encoder = &mut graphics.encoder;
-            text_vertex_data.clear();
-            text_vertex_data.extend(data.iter().flat_map(|&b| vec![255, 255, 255, b]));
-            UpdateTexture::update(cache, encoder, format, &text_vertex_data[..], offset, size)
-                .expect("failed to update texture")
-        };
-
-        // Specify how to get the drawable texture from the image. In this case, the image
-        // *is* the texture.
-        fn texture_from_image<T>(img: &T) -> &T { img }
-
         // Draw the conrod `render::Primitives`.
-        conrod::backend::piston::draw::primitives(primitives,
-                                                  c,
-                                                  g,
-                                                  &mut self.text_texture_cache,
-                                                  &mut self.glyph_cache,
-                                                  &self.image_map,
-                                                  cache_queued_glyphs,
-                                                  texture_from_image);
+        draw::primitives(
+            primitives,
+            c,
+            g,
+            &mut self.text_texture_cache,
+            &mut self.glyph_cache,
+            &self.image_map,
+            Ui::cache_queued_glyphs,
+            Ui::texture_from_image
+        );
 
     }
+}
+impl Ui {
+    // Specify how to get the drawable texture from the image.
+    // In this case, the image *is* the texture.
+    fn texture_from_image<T>(img: &T) -> &T { img }
+
+    // A function used for caching glyphs to the texture cache.
+    fn cache_queued_glyphs(
+        graphics: &mut G2d,
+        cache: &mut G2dTexture,
+        rect: conrod::text::rt::Rect<u32>,
+        data: &[u8]
+    ) {
+            let mut text_vertex_data = Vec::new();
+            let offset = [rect.min.x, rect.min.y];
+            let size = [rect.width(), rect.height()];
+            let encoder = &mut graphics.encoder;
+            text_vertex_data.clear();
+            text_vertex_data.extend(data.iter()
+                                    .flat_map(
+                                        |&b| vec![255, 255, 255, b]
+                                    ));
+
+            UpdateTexture::update(
+                cache,
+                encoder,
+                Format::Rgba8,
+                &text_vertex_data[..],
+                offset,
+                size
+            ).expect("failed to update texture");
+   }
 }
 
 impl Updatable for Ui {
@@ -159,13 +177,6 @@ pub fn theme() -> conrod::Theme {
         widget_styling: conrod::theme::StyleMap::default(),
         mouse_drag_threshold: 0.0,
         double_click_threshold: std::time::Duration::from_millis(500),
-    }
-}
-
-// Generate a unique `WidgetId` for each widget.
-widget_ids! {
-    pub struct Ids {
-        text,
     }
 }
 
