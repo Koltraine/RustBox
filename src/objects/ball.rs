@@ -9,12 +9,12 @@ use nphysics2d::object::{RigidBodyHandle};
 use super::{Renderable, Updatable, GameObject};
 
 pub struct Ball {
-    body: RigidBodyHandle<f32>,
-    radius: f32,
+    body: RigidBodyHandle<f64>,
+    radius: f64,
 }
 
 impl Ball {
-    pub fn new(radius: f32, body: RigidBodyHandle<f32>) -> Ball {
+    pub fn new(radius: f64, body: RigidBodyHandle<f64>) -> Ball {
         Ball {
             body: body,
             radius: radius,
@@ -34,12 +34,9 @@ impl Renderable for Ball {
         circle.draw(
             rectangle,
             &c.draw_state,
-            c.transform.trans(pos[0] as f64, pos[1] as f64)
-                        .rot_rad(rot.re as f64)
-                        .trans(
-                            (-self.radius/2.0) as f64,
-                            (-self.radius/2.0) as f64
-                        ),
+            c.transform.trans(pos[0], pos[1])
+                        .rot_rad(rot.re)
+                        .trans(-self.radius / 2.0, -self.radius / 2.0),
             g
         );
     }

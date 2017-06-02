@@ -139,11 +139,6 @@ impl Ui {
    }
 }
 
-impl Updatable for Ui {
-    fn update(&mut self, upd: UpdateArgs) {
-    }
-}
-
 impl EventHandler for Ui {
     fn event(&mut self, event: &Input) {
         if let Some(event) = conrod::backend::piston::event::convert(

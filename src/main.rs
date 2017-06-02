@@ -65,8 +65,8 @@ use objects::{Ball, Renderable, Updatable, EventHandler, GameObject};
 
 
 struct Game {
-    world: World<f32>,
-    timer: f32,
+    world: World<f64>,
+    timer: f64,
     // TODO: This box isn't very good, can we do better?
     objects: Vec<Box<GameObject>>,
 }
@@ -78,14 +78,14 @@ impl Game {
 
         Game {
             world: world,
-            timer: 0.0f32,
+            timer: 0.0f64,
             objects: vec![],
         }
     }
 
     pub fn update(&mut self, upd: UpdateArgs) {
-        self.timer += upd.dt as f32;
-        self.world.step(upd.dt as f32);
+        self.timer += upd.dt as f64;
+        self.world.step(upd.dt as f64);
         for object in &mut self.objects {
             object.update(upd);
         }
@@ -161,6 +161,7 @@ fn main() {
 
     while let Some(e) = window.next() {
         player.event(&e);
+        ui.event(&e);
         match e {
             Input::Render(_) => {
                 window.draw_2d(&e, |c, g| {
@@ -176,21 +177,16 @@ fn main() {
                 map.update(u);
                 game.update(u);
                 player.update(u);
-                ui.update(u);
-                ui.event(&e);
             }
             Input::Press(b) => {
                 game.keypress(b);
-                ui.event(&e);
             }
-            _ => {
-                ui.event(&e);
-            }
+            _ => {} // Catch unhandled event
         }
     }
 }
 
-fn init_world(w: &mut World<f32>) {
+fn init_world(w: &mut World<f64>) {
 
 
     /*
