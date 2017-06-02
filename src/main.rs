@@ -37,11 +37,16 @@ extern crate gfx_core;
 extern crate image;
 extern crate fps_counter;
 
+// UI
+#[macro_use]
+extern crate conrod;
+
 mod objects;
 mod map;
 mod player;
 mod character;
 mod image_ops;
+mod ui;
 
 use std::fs::File;
 
@@ -136,15 +141,6 @@ fn main() {
 
     //init_world(&mut game.world);
     //
-    // TODO: we dont really need this
-    // or at least lazy_static! it
-    let fonts = find_folder::Search::ParentsThenKids(3, 3)
-        .for_folder("fonts").unwrap();
-    println!("{:?}", fonts);
-
-    let ref font = fonts.join("FiraSans-Regular.ttf");
-    let factory = window.factory.clone();
-    let glyphs = Glyphs::new(font, factory).unwrap();
 
 
     //let map = map::TiledMap::new(9213);
@@ -161,6 +157,7 @@ fn main() {
     let mut map = TiledMap::new(&map_path, &mut window.factory.clone()).unwrap();
 
     let mut fps_counter = fps_counter::FPSCounter::new();
+    let mut ui = ui::Ui::new(&mut window.factory.clone());
 
     while let Some(e) = window.next() {
         player.event(&e);
@@ -170,6 +167,7 @@ fn main() {
                     game.render(c, g);
                     map.render(c, g);
                     player.render(c, g);
+                    ui.render(c, g);
                 });
                 let fps = fps_counter.tick();
                 println!("FPS: {}", fps);
@@ -178,11 +176,16 @@ fn main() {
                 map.update(u);
                 game.update(u);
                 player.update(u);
+                ui.update(u);
+                ui.event(&e);
             }
             Input::Press(b) => {
                 game.keypress(b);
+                ui.event(&e);
             }
-            _ => {} // Catch unhandled event
+            _ => {
+                ui.event(&e);
+            }
         }
     }
 }

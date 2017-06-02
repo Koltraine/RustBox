@@ -32,3 +32,8 @@ gfx_core = "^0.7"
 image = "^0.13"
 #graphics = ""
 fps_counter = "^0.2"
+
+# Ui
+[dependencies.conrod]
+version = "^0.52"
+features = ["piston"]
