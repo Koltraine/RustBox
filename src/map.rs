@@ -11,16 +11,21 @@ use tiled;
 use std::path::Path;
 use image_ops::TileBuffer;
 use std::collections::HashMap;
-use gfx::Factory;
-use gfx_device_gl::Resources;
+use gfx::{self, Factory, Encoder};
+use gfx::traits::FactoryExt;
+use gfx_device_gl::{self, Resources, CommandBuffer};
 use std::fs::File;
 use std::rc::Rc;
 use piston_window::image;
 use std::borrow::Borrow;
+use image::{Rgba, ImageBuffer};
+use gfx_core::texture::NewImageInfo;
+use utils::TextureAtlas;
 
 error_chain!{
     foreign_links {
         InputParsing(::tiled::TiledError);
+        TextureCreation(::gfx_core::factory::CombinedError);
     }
 }
 
@@ -31,63 +36,43 @@ error_chain!{
 // we then only have to re-render it if the camera moves
 pub struct TiledMap {
     map: tiled::Map,
-    // This feels a bit like a hack
-    // The reason we do this is because we only have access to a
-    // Factory<Resources> at the beginning of the program
-    //
-    // Once we have bigger maps we should change this to create
-    // textures at runtime
-    texture_buffers: HashMap<String, Vec<Vec<Rc<G2dTexture>>>>,
+
+    texture_atlas: TextureAtlas,
 }
 
 impl TiledMap {
-    pub fn new<F: Factory<Resources>>(path: &Path, factory: &mut F) -> Result<TiledMap> {
-
-        // This code is a mess, please clean it up
-        let mut pathbuf = {
-            let mut p = path.to_path_buf();
-            p.pop(); // Pop the map name
-            p
-        };
+    pub fn new<F>(path: &Path, factory: &mut F) -> Result<TiledMap>
+        where F: Factory<Resources> {
 
         let map = parse(File::open(path).unwrap())?;
-        let mut texture_buffers = HashMap::new();
-
-        for ref tileset in &map.tilesets {
-            let tile_dimensions = [
-                tileset.tile_width,
-                tileset.tile_height
-            ];
-            for ref image in &tileset.images {
-                let mut image_path = {
-                    let mut p = pathbuf.clone();
-                    image_path.push(image.source.clone());
-                    p
-                };
-
-                let tb = TileBuffer::new(image_path, tile_dimensions);
-
-                texture_buffers.insert(
-                    image.source.clone(),
-                    TiledMap::split_image(tb, factory)
-                );
-
-            }
-        }
+        let tex_dir = {
+            let mut p = path.to_path_buf();
+            p.pop();
+            p.push("dungeon_tiles.png");
+            p
+        };
+        let texture_atlas = TextureAtlas::new(
+            Rc::new(Texture::from_path(
+                factory,
+                tex_dir,
+                Flip::None,
+                &TextureSettings::new()
+            )?)
+        );
 
         Ok(TiledMap {
             map,
-            texture_buffers
+            texture_atlas
         })
     }
 
-    fn split_image<F: Factory<Resources>>(tb: TileBuffer, factory: &mut F) -> Vec<Vec<Rc<G2dTexture>>> {
+    fn split_image(tb: TileBuffer) -> Vec<Vec<ImageBuffer<Rgba<u8>, Vec<u8>>>> {
         let mut col_vec = vec![];
         for i in 0..tb.tiles_available()[0] {
             let mut row_vec = vec![];
 
             for j in 0..tb.tiles_available()[1] {
-                row_vec.push(tb.texture([i,j], factory).unwrap());
+                row_vec.push(tb.image([i,j]));
             }
 
             col_vec.push(row_vec);
@@ -98,9 +83,15 @@ impl TiledMap {
 
 impl Renderable for TiledMap {
     fn render(&mut self, c: Context, g: &mut G2d) {
-        for layer in self.map.layers.iter() {
-            self.render_layer(layer, c, g);
-        }
+        //self.encoder.clear(&self.data.out_color, [CLEAR_COLOR.0, CLEAR_COLOR.1, CLEAR_COLOR.2, CLEAR_COLOR.3]);
+
+
+        self.texture_atlas.render(c, g);
+        //for layer in self.map.layers.iter() {
+        //    self.render_layer(layer, c, g);
+        //}
+
+        //image(self.render_cache.borrow(), c.transform, g);
     }
 }
 impl TiledMap {
@@ -109,10 +100,9 @@ impl TiledMap {
             return;
         }
 
-        for row in 0..layer.tiles.len() {
-            for column in 0..layer.tiles[row].len() {
-                let tile_id = layer.tiles[row][column];
-                self.render_tile(tile_id, [column, row], c, g);
+        for (row, rt) in layer.tiles.iter().enumerate() {
+            for (column, ct) in rt.iter().enumerate() {
+                //self.render_tile(*ct, [column, row], c, g);
             }
         }
     }
@@ -124,21 +114,41 @@ impl TiledMap {
         };
 
         let img = &tileset.images[0];
-        let t = self.texture_buffers.get(&img.source).unwrap();
-        let texture_index = [
-            tile as usize % t.len(),
-            tile as usize / t.len(),
-        ];
+        //let t = self.image_buffers.get(&img.source).unwrap();
+        //let texture_index = [
+        //    tile as usize % t.len(),
+        //    tile as usize / t.len(),
+        //];
 
         // TODO:
         // This is very wrong
         // but hey
         // it works!
-        let tex = &t[texture_index[0]-1][texture_index[1]];
-        image(tex.borrow(), c.transform.trans(
-            (render_pos[0] * tileset.tile_width as usize) as f64,
-            (render_pos[1] * tileset.tile_height as usize) as f64,
-        ), g);
+        //let tex = &t[texture_index[0]-1][texture_index[1]];
+        //let rc = self.render_cache;
+        //let tex_vec: &[u8] =
+        //    &tex.into_vec()[..]; // TODO: This is cloning (I think), NOT GOOD
+        //g.encoder.update_texture(
+        //    &rc.surface,
+        //    None,
+        //    // TODO: We should store this at Creation time
+        //    NewImageInfo {
+        //        xoffset: (render_pos[0] * tileset.tile_width as usize) as u16,
+        //        yoffset: (render_pos[1] * tileset.tile_height as usize) as u16,
+        //        zoffset: 0,
+        //        width:   16,
+        //        height:  16,
+        //        depth:   0,
+        //        format:  (),
+        //        mipmap:  0, // No idea what this means
+        //    },
+        //    tex_vec
+        //);
+        //self.render_cache.update();
+        //image(tex.borrow(), c.transform.trans(
+        //    (render_pos[0] * tileset.tile_width as usize) as f64,
+        //    (render_pos[1] * tileset.tile_height as usize) as f64,
+        //), g);
     }
 }
 

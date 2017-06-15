@@ -29,6 +29,7 @@ extern crate nphysics2d;
 extern crate piston_window;
 extern crate sprite;
 extern crate texture;
+#[macro_use]
 extern crate gfx;
 //TODO: I would really like to make the code generic so that we dont need this
 // This would probably involve droping piston_window
@@ -47,6 +48,7 @@ mod player;
 mod character;
 mod image_ops;
 mod ui;
+mod utils;
 
 use std::fs::File;
 
@@ -157,10 +159,10 @@ fn main() {
         match e {
             Input::Render(_) => {
                 window.draw_2d(&e, |c, g| {
-                    game.render(c, g);
+                    //game.render(c, g);
                     map.render(c, g);
-                    player.render(c, g);
-                    ui.render(c, g);
+                    //player.render(c, g);
+                    //ui.render(c, g);
                 });
                 let fps = fps_counter.tick();
                 println!("FPS: {}", fps);
